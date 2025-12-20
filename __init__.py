@@ -165,17 +165,45 @@ class DeckSeedDialog(QDialog):
             QMessageBox.information(self, "Deck Seed", "No deck names found. Please enter at least one line.")
             return
 
-        # Save first, then run
+        # Save first
         self._save()
 
-        # Dedupe before creation
+        # Dedupe before preview/creation
         lines = _dedupe_keep_order(lines)
 
+        # --- Preview + confirm ---
+        preview_n = 20  # show first N decks
+        head = lines[:preview_n]
+        remaining = max(0, len(lines) - len(head))
+
+        preview_text = "\n".join(head)
+        if remaining:
+            preview_text += f"\n... (+{remaining} more)"
+
+        msg = (
+            f"About to create/ensure empty decks.\n\n"
+            f"Total decks: {len(lines)}\n"
+            f"Preview (first {min(preview_n, len(lines))}):\n\n"
+            f"{preview_text}\n\n"
+            f"Proceed?"
+        )
+
+        ret = QMessageBox.question(
+            self,
+            "Confirm Deck Creation",
+            msg,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if ret != QMessageBox.StandardButton.Yes:
+            return
+
+        # --- Run ---
         ok, ng = _ensure_empty_decks(lines)
-        msg = f"Ensured decks: {ok}"
+        done_msg = f"Ensured decks: {ok}"
         if ng:
-            msg += f"\nFailed: {ng} (invalid deck name(s)?)"
-        showInfo(msg)
+            done_msg += f"\nFailed: {ng} (invalid deck name(s)?)"
+        showInfo(done_msg)
 
 
 _dialog: DeckSeedDialog | None = None

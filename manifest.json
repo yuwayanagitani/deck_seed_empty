@@ -1,0 +1,10 @@
+{
+  "name": "Deck Seed: Create Empty Decks",
+  "package": "deck_seed_empty",
+  "author": "Yuwa Yanagitani",
+  "version": "0.1.0",
+  "description": "Create empty Anki decks (including nested Parent::Child decks) from a simple list. No cards are created.",
+  "min_point_version": 250000,
+  "max_point_version": 999999,
+  "license": "MIT"
+}

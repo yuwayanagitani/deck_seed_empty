@@ -1,21 +1,55 @@
-*.md
+# ================================
+# Anki internal (auto-generated)
+# ================================
+meta.json
 
-# ---- Python / Anki / Qt ----
-__pycache__/
-*.pyc
-*.pyo
+# ================================
+# Cache  temporary files
+# ================================
+cache
+ai_cache
+tmp
+temp
 
-# ---- SQLite runtime files ----
-coverage.sqlite
-coverage.sqlite-wal
-coverage.sqlite-shm
+# ================================
+# Python
+# ================================
+__pycache__
+.pyc
+.pyo
+.pyd
 
-# ---- OS ----
+# ================================
+# macOS  Windows OS files
+# ================================
 .DS_Store
+__MACOSX
 Thumbs.db
+desktop.ini
 
-# ---- Editor ----
-.vscode/
-.idea/
+# ================================
+# Secrets  local configs
+# ================================
+.env
+.env.
+.key
+.secret
+local_config.json
 
-.sqlite
+# ================================
+# Logs  debug outputs
+# ================================
+.log
+
+# ================================
+# Editor  IDE
+# ================================
+.vscode
+.idea
+
+# ================================
+# Build  distribution artifacts
+# ================================
+dist
+build
+.zip
