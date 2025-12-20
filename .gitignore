@@ -1,0 +1,21 @@
+*.md
+
+# ---- Python / Anki / Qt ----
+__pycache__/
+*.pyc
+*.pyo
+
+# ---- SQLite runtime files ----
+coverage.sqlite
+coverage.sqlite-wal
+coverage.sqlite-shm
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- Editor ----
+.vscode/
+.idea/
+
+.sqlite
