@@ -8,6 +8,7 @@ from aqt.qt import (
     QHBoxLayout,
     QLabel,
     QMessageBox,
+    QPlainTextEdit,
     QPushButton,
     QSettings,
     QTextEdit,
@@ -82,6 +83,46 @@ SAMPLE_TEXT = """# One deck name per line. Use '::' for child decks.
 02 Necrosis 2
 02 Necrosis 2::01 Liponecrosis pancreatis
 """
+
+
+class DeckConfirmDialog(QDialog):
+    """
+    Custom confirmation dialog that displays the full list of decks
+    in a scrollable, resizable dialog.
+    """
+    def __init__(self, deck_names: list[str], parent=None) -> None:
+        super().__init__(parent)
+        
+        self.setWindowTitle("Confirm Deck Creation")
+        self.setMinimumWidth(500)
+        self.setMinimumHeight(400)
+        self.resize(600, 500)
+        
+        layout = QVBoxLayout(self)
+        
+        # Summary text
+        summary = QLabel(
+            f"About to create/ensure empty decks.\n\n"
+            f"Total decks: {len(deck_names)}"
+        )
+        layout.addWidget(summary)
+        
+        # Scrollable deck list
+        list_label = QLabel("Deck names:")
+        layout.addWidget(list_label)
+        
+        self.deck_list_view = QPlainTextEdit(self)
+        self.deck_list_view.setPlainText("\n".join(deck_names))
+        self.deck_list_view.setReadOnly(True)
+        layout.addWidget(self.deck_list_view, 1)
+        
+        # Action buttons
+        button_box = QDialogButtonBox(self)
+        btn_create = button_box.addButton("Create", QDialogButtonBox.ButtonRole.AcceptRole)
+        btn_cancel = button_box.addButton("Cancel", QDialogButtonBox.ButtonRole.RejectRole)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
 
 
 class DeckSeedDialog(QDialog):
@@ -168,34 +209,12 @@ class DeckSeedDialog(QDialog):
         # Save first
         self._save()
 
-        # Dedupe before preview/creation
+        # Dedupe before creation
         lines = _dedupe_keep_order(lines)
 
-        # --- Preview + confirm ---
-        preview_n = 20  # show first N decks
-        head = lines[:preview_n]
-        remaining = max(0, len(lines) - len(head))
-
-        preview_text = "\n".join(head)
-        if remaining:
-            preview_text += f"\n... (+{remaining} more)"
-
-        msg = (
-            f"About to create/ensure empty decks.\n\n"
-            f"Total decks: {len(lines)}\n"
-            f"Preview (first {min(preview_n, len(lines))}):\n\n"
-            f"{preview_text}\n\n"
-            f"Proceed?"
-        )
-
-        ret = QMessageBox.question(
-            self,
-            "Confirm Deck Creation",
-            msg,
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
-        )
-        if ret != QMessageBox.StandardButton.Yes:
+        # --- Confirm with custom dialog ---
+        confirm_dialog = DeckConfirmDialog(lines, parent=self)
+        if confirm_dialog.exec() != QDialog.DialogCode.Accepted:
             return
 
         # --- Run ---
